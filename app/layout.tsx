@@ -9,6 +9,7 @@ import {
   SignedOut,
   UserButton,
 } from "@clerk/nextjs";
+import { AppProps } from "next/app";
 
 const IBMPlex = IBM_Plex_Sans({
   subsets: ["latin"],
@@ -23,11 +24,20 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
+  pageProps,
 }: Readonly<{
   children: React.ReactNode;
+  pageProps: AppProps;
 }>) {
   return (
-    <ClerkProvider>
+    <ClerkProvider
+      {...pageProps}
+      appearance={{
+        variables: {
+          colorPrimary: "#624cf5",
+        },
+      }}
+    >
       <html lang="en">
         <body className={cn("font-IBMPlex antialiased", IBMPlex.variable)}>
           {children}
