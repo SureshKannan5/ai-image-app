@@ -1,13 +1,11 @@
-/* eslint-disable camelcase */
-import { WebhookEvent, clerkClient } from "@clerk/nextjs/server";
-import { headers } from "next/headers";
-import { NextResponse } from "next/server";
 import { Webhook } from "svix";
-
-import { createUser, deleteUser, updateUser } from "@/lib/actions/user.action";
+import { headers } from "next/headers";
+import { WebhookEvent, clerkClient } from "@clerk/nextjs/server";
+import { createUser, updateUser, deleteUser } from "@/lib/actions/user.action";
+import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
-  // You can find this in the Clerk Dashboard -> Webhooks -> choose the webhook
+  // You can find this in the Clerk Dashboard -> Webhooks -> choose the endpoint
   const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET;
 
   if (!WEBHOOK_SECRET) {
@@ -52,36 +50,48 @@ export async function POST(req: Request) {
     });
   }
 
-  // Get the ID and type
   const { id } = evt.data;
+
   const eventType = evt.type;
 
   // CREATE
   if (eventType === "user.created") {
-    const { id, email_addresses, image_url, first_name, last_name, username } =
-      evt.data;
+    console.log("darta", evt.data);
 
-    const user = {
-      clerkId: id,
-      email: email_addresses[0].email_address,
-      username: username!,
-      firstName: first_name || "",
-      lastName: last_name || "",
-      photo: image_url,
-    };
+    try {
+      const {
+        id,
+        email_addresses,
+        image_url,
+        first_name,
+        last_name,
+        username,
+      } = evt.data;
 
-    const newUser = await createUser(user);
+      const user = {
+        clerkId: id,
+        email: email_addresses[0].email_address,
+        username: username!,
+        firstName: first_name || "",
+        lastName: last_name || "",
+        photo: image_url,
+      };
 
-    // Set public metadata
-    if (newUser) {
-      await clerkClient.users.updateUserMetadata(id, {
-        publicMetadata: {
-          userId: newUser._id,
-        },
-      });
+      const newUser = await createUser(user);
+
+      // Set public metadata
+      if (newUser) {
+        await clerkClient.users.updateUserMetadata(id, {
+          publicMetadata: {
+            userId: newUser._id,
+          },
+        });
+      }
+
+      return NextResponse.json({ message: "OK", user: newUser });
+    } catch (error) {
+      console.log("errror", error);
     }
-
-    return NextResponse.json({ message: "OK", user: newUser });
   }
 
   // UPDATE
