@@ -23,12 +23,12 @@ export declare type UpdateUserParams = {
 export declare type AddImageParams = {
   image: {
     title: string;
-    publicId: string;
+    publicId: string | undefined;
     transformationType: string;
-    width: number;
-    height: number;
+    width: number | undefined;
+    height: number | undefined;
     config: any;
-    secureURL: string;
+    secureURL: string | undefined;
     transformationURL: string;
     aspectRatio: string | undefined;
     prompt: string | undefined;
@@ -42,12 +42,12 @@ export declare type UpdateImageParams = {
   image: {
     _id: string;
     title: string;
-    publicId: string;
+    publicId: string | undefined;
     transformationType: string;
-    width: number;
-    height: number;
+    width: number | undefined;
+    height: number | undefined;
     config: any;
-    secureURL: string;
+    secureURL: string | undefined;
     transformationURL: string;
     aspectRatio: string | undefined;
     prompt: string | undefined;
